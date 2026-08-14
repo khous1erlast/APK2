@@ -106,6 +106,14 @@
       color:var(--primary);
       border:1px solid var(--border);
     }
+    .btn.facebook{
+      background:#1877f2;
+      color:white;
+      border:1px solid #1877f2;
+    }
+    .btn.facebook:hover{
+      background:#166fe5;
+    }
     .hero-card{
       background:linear-gradient(135deg,#eff6ff,#ffffff);
       border:1px solid var(--border);
@@ -268,6 +276,7 @@
       <div class="search">
         <input id="searchInput" placeholder="Rechercher un produit..." />
       </div>
+      <button class="btn facebook" id="facebookLoginBtn" style="padding:8px 12px; border-radius:999px;">Continuer avec Facebook</button>
       <button class="cart-btn" id="cartButton">Panier (<span id="cartCount">0</span>)</button>
     </div>
   </header>
@@ -295,6 +304,13 @@
         <button class="chip" data-category="Mode">Mode</button>
       </div>
       <div style="color:var(--muted)">Livraison rapide • Paiement sécurisé</div>
+    </div>
+
+    <div class="panel" id="facebookDemo" style="margin-bottom:20px; background:linear-gradient(135deg,#eef5ff,#ffffff);">
+      <h3 style="margin-top:0;">Connexion démonstration</h3>
+      <p style="margin:0 0 12px; color:var(--muted);">Cette version montre un bouton de connexion Facebook pour une démonstration visuelle.</p>
+      <button class="btn facebook" id="facebookDemoBtn">Se connecter avec Facebook</button>
+      <div id="facebookStatus" style="margin-top:12px; display:none; color:var(--success); font-weight:700;">Connecté avec Facebook (démo)</div>
     </div>
 
     <section id="products" class="products"></section>
@@ -479,6 +495,15 @@
     document.getElementById("openCheckout").addEventListener("click", () => {
       document.getElementById("checkoutModal").classList.add("open");
     });
+
+    function simulateFacebookLogin() {
+      const status = document.getElementById("facebookStatus");
+      status.style.display = "block";
+      status.textContent = "Connecté avec Facebook (démo)";
+    }
+
+    document.getElementById("facebookLoginBtn").addEventListener("click", simulateFacebookLogin);
+    document.getElementById("facebookDemoBtn").addEventListener("click", simulateFacebookLogin);
 
     document.getElementById("checkoutModal").addEventListener("click", (e) => {
       if(e.target.id === "checkoutModal") {
