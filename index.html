@@ -496,10 +496,66 @@
       document.getElementById("checkoutModal").classList.add("open");
     });
 
-    function simulateFacebookLogin() {
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
+    let auth = null;
+    let facebookProvider = null;
+
+    async function initializeFacebookAuth() {
+      if (!isFirebaseConfigured) {
+        return null;
+      }
+
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const { getAuth, FacebookAuthProvider, signInWithPopup, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      facebookProvider = new FacebookAuthProvider();
+      facebookProvider.addScope("email");
+      facebookProvider.addScope("public_profile");
+
+      onAuthStateChanged(auth, (user) => {
+        const status = document.getElementById("facebookStatus");
+        if (!status) return;
+        if (user) {
+          status.textContent = `Connecté avec Facebook : ${user.displayName || user.email || "Utilisateur"}`;
+          status.style.display = "block";
+        }
+      });
+
+      return { auth, facebookProvider, signInWithPopup };
+    }
+
+    async function simulateFacebookLogin() {
       const status = document.getElementById("facebookStatus");
+
+      if (isFirebaseConfigured) {
+        try {
+          const authModule = await initializeFacebookAuth();
+          if (!authModule) {
+            throw new Error("Firebase non initialisé");
+          }
+          const result = await authModule.signInWithPopup(authModule.auth, authModule.facebookProvider);
+          const user = result.user;
+          status.textContent = `Connecté avec Facebook : ${user.displayName || user.email || "Utilisateur"}`;
+          status.style.display = "block";
+        } catch (error) {
+          console.error("Erreur Facebook Login:", error);
+          status.textContent = "Connexion Facebook refusée. Vérifie la configuration Firebase.";
+          status.style.display = "block";
+        }
+        return;
+      }
+
+      status.textContent = "Connexion Facebook (démo). Remplacez les clés Firebase pour activer la vraie authentification.";
       status.style.display = "block";
-      status.textContent = "Connecté avec Facebook (démo)";
     }
 
     document.getElementById("facebookLoginBtn").addEventListener("click", simulateFacebookLogin);
